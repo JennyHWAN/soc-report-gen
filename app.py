@@ -6,15 +6,15 @@ import os
 st.set_page_config(page_title="SOC Report Generator", layout="centered")
 st.title("SOC Report Generator")
 
-st.markdown("""
-<style>
-    /* Style expanders (background & text) */ 
-    details summary:hover {
-        color: #007BFF !important;
-        cursor: pointer;
-    }
-</style>
-""", unsafe_allow_html=True)
+# st.markdown("""
+# <style>
+#     /* Style expanders (background & text) */
+#     details summary:hover {
+#         color: #007BFF !important;
+#         cursor: pointer;
+#     }
+# </style>
+# """, unsafe_allow_html=True)
 
 st.markdown("""
 This application helps you generate a formatted SOC report (Parts I–V).
