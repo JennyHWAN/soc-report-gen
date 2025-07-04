@@ -1,20 +1,12 @@
 import streamlit as st
 import tempfile
 import os
-# from backend.soc_report_generator import generate_part_i_ii, generate_part_iii_iv, generate_final_report
+
+from backend.soc_report_gen import generate_part_i_ii, generate_part_iii_iv
+from backend.soc_report_gen import generate_part_i_ii, generate_part_iii_iv, generate_final_report
 
 st.set_page_config(page_title="SOC Report Generator", layout="centered")
 st.title("SOC Report Generator")
-
-# st.markdown("""
-# <style>
-#     /* Style expanders (background & text) */
-#     details summary:hover {
-#         color: #007BFF !important;
-#         cursor: pointer;
-#     }
-# </style>
-# """, unsafe_allow_html=True)
 
 st.markdown("""
 This application helps you generate a formatted SOC report (Parts I–V).
