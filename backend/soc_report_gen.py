@@ -3,6 +3,7 @@ import tempfile
 from docx import Document
 import pandas as pd
 import subprocess
+import streamlit as st
 from pathlib import Path
 
 # === Utility Functions ===
@@ -43,8 +44,10 @@ def generate_part_i_ii(word_file):
     with open(tex_path, "w") as f:
         f.write(tex_content)
 
-    pdf_path = render_latex_to_pdf(tex_path)
-    docx_path = convert_pdf_to_docx(pdf_path)
+    with st.spinner("Generating Part I & II..."):
+        pdf_path = render_latex_to_pdf(tex_path)
+        docx_path = convert_pdf_to_docx(pdf_path)
+
     return tex_path.replace(".tex", "")
 
 # === Part III & IV: Excel Input ===
@@ -66,8 +69,10 @@ def generate_part_iii_iv(excel_file):
     with open(tex_path, "w") as f:
         f.write(tex_content)
 
-    pdf_path = render_latex_to_pdf(tex_path)
-    docx_path = convert_pdf_to_docx(pdf_path)
+    with st.spinner("Generating Part III & IV..."):
+        pdf_path = render_latex_to_pdf(tex_path)
+        docx_path = convert_pdf_to_docx(pdf_path)
+
     return tex_path.replace(".tex", "")
 
 # === Final Report Assembly ===
@@ -85,6 +90,8 @@ def generate_final_report(files):
     with open(tex_path, "w") as f:
         f.write(combined_tex)
 
-    pdf_path = render_latex_to_pdf(tex_path)
-    docx_path = convert_pdf_to_docx(pdf_path)
+    with st.spinner("Generating final report..."):
+        pdf_path = render_latex_to_pdf(tex_path)
+        docx_path = convert_pdf_to_docx(pdf_path)
+
     return tex_path.replace(".tex", "")

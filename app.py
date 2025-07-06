@@ -1,3 +1,5 @@
+from os import WCONTINUED
+
 import streamlit as st
 import tempfile
 import os
@@ -15,13 +17,41 @@ This application helps you generate a formatted SOC report (Parts I–V).
 - Generate final PDF and DOCX files.
 """)
 
+# Initialize state
+if 'file_uploaded' not in st.session_state:
+    st.session_state.file_uploaded = ""
+if 'generate_clicked' not in st.session_state:
+    st.session_state.generate_clicked = False
+if 'output_path' not in st.session_state:
+    st.session_state.output_path = ""
+
+def handle_generation():
+    st.session_state.output_path = generate_part_i_ii(word_file)
+    st.session_state.generate_clicked = True
+
 with st.expander("1. Upload and Generate Part I & II (MA & AR)"):
     word_file = st.file_uploader("Upload MA & AR Word File", type=["docx"])
-    if word_file and st.button("Generate Part I & II"):
-        output_path = generate_part_i_ii(word_file)
-        st.success("Formatted Part I & II generated!")
-        st.download_button("Download PDF", open(output_path + ".pdf", "rb"), file_name="Part_I_II.pdf")
-        st.download_button("Download Word", open(output_path + ".docx", "rb"), file_name="Part_I_II.docx")
+
+    if word_file:
+        # Detect new upload
+        if st.session_state.file_uploaded != word_file.file_id:
+            st.session_state.generate_clicked = False
+            st.session_state.file_uploaded = word_file.file_id
+
+        # === Show Button Conditionally ===
+        if not st.session_state.generate_clicked:
+            st.button("Generate Part I & II", on_click=handle_generation())
+        else:
+            st.success("Formatted Part I & II generated!")
+
+            # st.button("Formatted Part I & II generated, click here to download.")
+            st.download_button("Download PDF", open(st.session_state.output_path + ".pdf", "rb"),
+                               file_name="Part_I_II.pdf")
+            st.download_button("Download Word", open(st.session_state.output_path + ".docx", "rb"),
+                               file_name="Part_I_II.docx")
+        # else:
+        #     st.download_button("Download PDF", open(st.session_state.output_path + ".pdf", "rb"), file_name="Part_I_II.pdf")
+        #     st.download_button("Download Word", open(st.session_state.output_path + ".docx", "rb"), file_name="Part_I_II.docx")
 
 with st.expander("2. Upload and Generate Part III & IV (Control + Test)"):
     excel_file = st.file_uploader("Upload Description & Testing Excel File", type=["xlsx"])
