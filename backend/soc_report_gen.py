@@ -23,6 +23,17 @@ def convert_pdf_to_docx(pdf_path):
     subprocess.run(["pandoc", pdf_path, "-o", docx_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return docx_path
 
+def convert_tex_to_docx(tex_path):
+    docx_path = tex_path.replace(".tex", ".docx")
+    result = subprocess.run(
+        ["pandoc", tex_path, "-o", docx_path],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE
+    )
+    if result.returncode != 0:
+        raise RuntimeError(f"Pandoc failed: {result.stderr.decode()}")
+    return docx_path
+
 # === Part I & II: MA & AR Word Input ===
 def generate_part_i_ii(word_file):
     word_path = save_uploaded_file(word_file, ".docx")
@@ -71,7 +82,7 @@ def generate_part_iii_iv(excel_file):
 
     with st.spinner("Generating Part III & IV..."):
         pdf_path = render_latex_to_pdf(tex_path)
-        docx_path = convert_pdf_to_docx(pdf_path)
+        docx_path = convert_tex_to_docx(tex_path)
 
     return tex_path.replace(".tex", "")
 
