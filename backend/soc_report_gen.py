@@ -18,11 +18,6 @@ def render_latex_to_pdf(tex_path):
     subprocess.run(["pdflatex", "-output-directory", output_dir, tex_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
     return tex_path.replace(".tex", ".pdf")
 
-def convert_pdf_to_docx(pdf_path):
-    docx_path = pdf_path.replace(".pdf", ".docx")
-    subprocess.run(["pandoc", pdf_path, "-o", docx_path], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-    return docx_path
-
 def convert_tex_to_docx(tex_path):
     docx_path = tex_path.replace(".tex", ".docx")
     result = subprocess.run(
@@ -57,7 +52,7 @@ def generate_part_i_ii(word_file):
 
     with st.spinner("Generating Part I & II..."):
         pdf_path = render_latex_to_pdf(tex_path)
-        docx_path = convert_pdf_to_docx(pdf_path)
+        docx_path = convert_tex_to_docx(tex_path)
 
     return tex_path.replace(".tex", "")
 
@@ -103,6 +98,6 @@ def generate_final_report(files):
 
     with st.spinner("Generating final report..."):
         pdf_path = render_latex_to_pdf(tex_path)
-        docx_path = convert_pdf_to_docx(pdf_path)
+        docx_path = convert_tex_to_docx(tex_path)
 
     return tex_path.replace(".tex", "")

@@ -22,14 +22,20 @@ if 'function_1' not in st.session_state:
     st.session_state.function_1 = ""
 if 'function_2' not in st.session_state:
     st.session_state.function_2 = ""
+if 'function_3' not in st.session_state:
+    st.session_state.function_3 = ""
 if 'generate_clicked_1' not in st.session_state:
     st.session_state.generate_clicked_1 = False
 if 'generate_clicked_2' not in st.session_state:
     st.session_state.generate_clicked_2 = False
+if 'generate_clicked_3' not in st.session_state:
+    st.session_state.generate_clicked_3 = False
 if 'output_path_1' not in st.session_state:
     st.session_state.output_path_1 = ""
 if 'output_path_2' not in st.session_state:
     st.session_state.output_path_2 = ""
+if 'output_path_3' not in st.session_state:
+    st.session_state.output_path_3 = ""
 
 def handle_generation_1():
     st.session_state.output_path_1 = generate_part_i_ii(word_file)
@@ -38,6 +44,10 @@ def handle_generation_1():
 def handle_generation_2():
     st.session_state.output_path_2 = generate_part_iii_iv(excel_file)
     st.session_state.generate_clicked_2 = True
+
+def handle_generation_3():
+    st.session_state.output_path_3 = generate_final_report(files)
+    st.session_state.generate_clicked_3 = True
 
 with st.expander("1. Upload and Generate Part I & II (MA & AR)"):
     word_file = st.file_uploader("Upload MA & AR Word File", type=["docx"])
@@ -81,11 +91,19 @@ with (st.expander("2. Upload and Generate Part III & IV (Control + Test)")):
 
 with st.expander("3. Generate Final Report"):
     files = st.file_uploader("Upload All Parts (Word)", type=["docx"], accept_multiple_files=True)
-    if files and st.button("Generate Final Report"):
-        final_path = generate_final_report(files)
-        st.success("Final Report generated!")
-        st.download_button("Download Final PDF", open(final_path + ".pdf", "rb"), file_name="SOC_Final_Report.pdf")
-        st.download_button("Download Final Word", open(final_path + ".docx", "rb"), file_name="SOC_Final_Report.docx")
+    files_id = []
+    for file in files:
+        files_id.append(file.file_id)
+    if files:
+        if st.session_state.function_3 != files_id:
+            st.session_state.generate_clicked_3 = False
+            st.session_state.function_3 = files_id
+        if not st.session_state.generate_clicked_3:
+            st.button("Generate Final Report", on_click = handle_generation_3())
+        else:
+            st.success("Final Report generated!")
+            st.download_button("Download Final PDF", open(st.session_state.output_path_3 + ".pdf", "rb"), file_name="SOC_Final_Report.pdf")
+            st.download_button("Download Final Word", open(st.session_state.output_path_3 + ".docx", "rb"), file_name="SOC_Final_Report.docx")
 
 st.markdown("---")
 st.markdown("### 💬 Need Help?")
