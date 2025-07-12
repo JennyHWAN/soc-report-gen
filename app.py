@@ -50,6 +50,7 @@ def handle_generation_3():
     st.session_state.generate_clicked_3 = True
 
 with st.expander("1. Upload and Generate Part I & II (MA & AR)"):
+    st.caption("📄 Only `.docx` Word files are supported for this section.")
     word_file = st.file_uploader("Upload MA & AR Word File", type=["docx"])
 
     if word_file:
@@ -74,6 +75,7 @@ with st.expander("1. Upload and Generate Part I & II (MA & AR)"):
         #     st.download_button("Download Word", open(st.session_state.output_path + ".docx", "rb"), file_name="Part_I_II.docx")
 
 with (st.expander("2. Upload and Generate Part III & IV (Control + Test)")):
+    st.caption("📄 Only `.xlsx` Excel files are supported for this section.")
     excel_file = st.file_uploader("Upload Description & Testing Excel File", type=["xlsx"])
     if excel_file:
         # Detect new upload
@@ -90,6 +92,7 @@ with (st.expander("2. Upload and Generate Part III & IV (Control + Test)")):
             st.download_button("Download Word", open(st.session_state.output_path_2 + ".docx", "rb"), file_name="Part_III_IV.docx")
 
 with st.expander("3. Generate Final Report"):
+    st.caption("📄 Only `.docx` Word files are supported for this section.")
     files = st.file_uploader("Upload All Parts (Word)", type=["docx"], accept_multiple_files=True)
     files_id = []
     for file in files:
