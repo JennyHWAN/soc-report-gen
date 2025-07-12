@@ -4,7 +4,6 @@ import streamlit as st
 import tempfile
 import os
 
-from backend.soc_report_gen import generate_part_i_ii, generate_part_iii_iv
 from backend.soc_report_gen import generate_part_i_ii, generate_part_iii_iv, generate_final_report
 
 st.set_page_config(page_title="SOC Report Generator", layout="centered")
