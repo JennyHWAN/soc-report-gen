@@ -96,8 +96,6 @@ def generate_part_i_ii(word_file):
 
     \vspace*{{3em}}
 
-    上海外服（集团）有限公司
-
     \newpage
 
     \section*{{第二部分 – 独立服务审计师报告}}
@@ -119,8 +117,6 @@ def generate_part_i_ii(word_file):
     \vspace*{{3em}}
 
     \vspace*{{3em}}
-
-    安永华明会计师事务所（特殊普通合伙）上海分所
 
     \end{{document}}
     """

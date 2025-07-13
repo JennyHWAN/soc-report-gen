@@ -1,15 +1,18 @@
 ## Structure
 ```
 soc-report-gen/
-├── app.py                         ← Streamlit frontend
+├── app.py                                  ← Streamlit frontend
 ├── backend/
 │   ├── __init__.py
-│   ├── soc_report_gen.py          ← Orchestrator (calls helpers)
+│   ├── soc_report_gen.py                   ← Orchestrator (calls helpers)
 │   ├── extract/
 │   │   ├── __init__.py\
-│   │   └── ma_ar_parser.py        ← MA & AR parsing logic
+│   │   └── ma_ar_parser.py                 ← MA & AR parsing logic
 │   └── utils/
-│       └── latex_utils.py         ← Unicode/LaTeX encoding, spacing logic, etc.
+│       └── latex_utils.py                  ← Unicode/LaTeX encoding, spacing logic, etc.
+├── tests/
+│   ├── __init__.py
+│   └── test_extract_ma_ar_sections.py      ← 🧪 tests for ma_ar_parser
 ```
 
 # Run the app
