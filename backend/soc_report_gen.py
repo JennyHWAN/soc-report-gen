@@ -45,81 +45,32 @@ def convert_tex_to_docx(tex_path):
         raise RuntimeError(f"Pandoc failed: {result.stderr.decode()}")
     return docx_path
 
-def format_as_latex(text_list):
-    # Escape LaTeX special characters and join paragraphs
-    # Only escape actual LaTeX special characters — leave Chinese characters untouched
-    def escape_latex(text):
-        return (text.replace('\\', r'\textbackslash{}')
-                .replace('&', r'\&')
-                .replace('%', r'\%')
-                .replace('$', r'\$')
-                .replace('#', r'\#')
-                .replace('_', r'\_')
-                .replace('{', r'\{')
-                .replace('}', r'\}')
-                .replace('~', r'\textasciitilde{}')
-                .replace('^', r'\textasciicircum{}'))
-
-    return "\n\n".join(escape_latex(p) for p in text_list)
-
 # === Part I & II: MA & AR Word Input ===
 def generate_part_i_ii(word_file):
     word_path = save_uploaded_file(word_file, ".docx")
     doc = Document(word_path)
 
     ma_text, ar_text = extract_ma_ar_sections(doc)
-    # ma_latex = format_paragraphs_to_latex(ma_text)
-    # ar_latex = format_paragraphs_to_latex(ar_text)
+    ma_latex = format_paragraphs_to_latex(ma_text[:-1])
+    ar_latex = format_paragraphs_to_latex(ar_text[:-3])
 
-    tex_content = rf"""
-    \documentclass[12pt]{{article}}
-    \usepackage[margin=1in]{{geometry}}
-    \usepackage{{xeCJK}}
-    \usepackage{{fontspec}}
-    \setmainfont{{TeX Gyre Termes}}
-    \setCJKmainfont{{Noto Sans CJK SC}}
-
-    \clubpenalty=10000
-    \widowpenalty=10000
-
-    \begin{{document}}
-
+    body = rf"""
     \section*{{第一部分 – 管理层认定}}
 
-    {format_as_latex(ma_text)}
+    {ma_latex}
 
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
+    {latex_signature_block(ma_text[-1], lines_before=4)}
 
     \newpage
 
     \section*{{第二部分 – 独立服务审计师报告}}
 
-    {format_as_latex(ar_text)}
+    {ar_latex}
 
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
-
-    \vspace*{{3em}}
-
-    \end{{document}}
+    {latex_signature_block(r"\\".join(ar_text[-3:]), lines_before=8)}
     """
+
+    tex_content = latex_document_wrapper(body)
 
     tex_path = word_path.replace(".docx", ".tex")
     with open(tex_path, "w", encoding="utf-8") as f:
