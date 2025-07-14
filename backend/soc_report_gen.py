@@ -1,5 +1,8 @@
 import os
 import tempfile
+import shutil
+from typing import final
+
 from docx import Document
 import pandas as pd
 import subprocess
@@ -45,44 +48,66 @@ def convert_tex_to_docx(tex_path):
         raise RuntimeError(f"Pandoc failed: {result.stderr.decode()}")
     return docx_path
 
+def make_final_output_base(prefix):
+    output_dir = os.path.join(os.getcwd(), "generated_reports")
+    os.makedirs(output_dir, exist_ok=True)
+    # timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return os.path.join(output_dir, f"{prefix}")
+
 # === Part I & II: MA & AR Word Input ===
 def generate_part_i_ii(word_file):
-    word_path = save_uploaded_file(word_file, ".docx")
-    doc = Document(word_path)
+    # Load document
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_word:
+        tmp_word.write(word_file.read())
+        tmp_word_path = tmp_word.name
 
-    ma_text, ar_text = extract_ma_ar_sections(doc)
-    ma_latex = format_paragraphs_to_latex(ma_text[:-1])
-    ar_latex = format_paragraphs_to_latex(ar_text[:-3])
+    doc = Document(tmp_word_path)
 
-    body = rf"""
-    \section*{{第一部分 – 管理层认定}}
+    try:
+        ma_text, ar_text = extract_ma_ar_sections(doc)
+        ma_latex = format_paragraphs_to_latex(ma_text[:-1])
+        ar_latex = format_paragraphs_to_latex(ar_text[:-3])
 
-    {ma_latex}
+        body = rf"""
+        \section*{{第一部分 – 管理层认定}}
+    
+        {ma_latex}
+    
+        {latex_signature_block(ma_text[-1], lines_before=4)}
+    
+        \newpage
+    
+        \section*{{第二部分 – 独立服务审计师报告}}
+    
+        {ar_latex}
+    
+        {latex_signature_block(r"\\".join(ar_text[-3:]), lines_before=8)}
+        """
 
-    {latex_signature_block(ma_text[-1], lines_before=4)}
+        tex_content = latex_document_wrapper(body)
 
-    \newpage
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            tex_path = os.path.join(tmp_dir, "part1_2.tex")
+            with open(tex_path, "w", encoding="utf-8") as f:
+                f.write(tex_content)
 
-    \section*{{第二部分 – 独立服务审计师报告}}
+                with st.spinner("Processing Part I & II..."):
+                    # st.write("Rendering LaTeX to PDF...")
+                    pdf_path = render_latex_to_pdf(tex_path)
+                    # st.write("Converting TeX to DOCX...")
+                    docx_path = convert_tex_to_docx(tex_path)
 
-    {ar_latex}
+                # === Copy only final outputs to persistent directory ===
+                final_base = make_final_output_base("Part_I_II")
+                shutil.copy(pdf_path, final_base + ".pdf")
+                shutil.copy(docx_path, final_base + ".docx")
 
-    {latex_signature_block(r"\\".join(ar_text[-3:]), lines_before=8)}
-    """
+        # Temp files automatically cleaned
+        return final_base
 
-    tex_content = latex_document_wrapper(body)
-
-    tex_path = word_path.replace(".docx", ".tex")
-    with open(tex_path, "w", encoding="utf-8") as f:
-        f.write(tex_content)
-
-    with st.spinner("Processing Part I & II..."):
-        # st.write("Rendering LaTeX to PDF...")
-        pdf_path = render_latex_to_pdf(tex_path)
-        # st.write("Converting TeX to DOCX...")
-        docx_path = convert_tex_to_docx(tex_path)
-
-    return tex_path.replace(".tex", "")
+    finally:
+        # ✅ This ensures the file is always cleaned up, even on error
+        os.remove(tmp_word_path)
 
 # === Part III & IV: Excel Input ===
 def generate_part_iii_iv(excel_file):
