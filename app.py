@@ -29,15 +29,17 @@ if 'generate_clicked_2' not in st.session_state:
     st.session_state.generate_clicked_2 = False
 if 'generate_clicked_3' not in st.session_state:
     st.session_state.generate_clicked_3 = False
-if 'output_path_1' not in st.session_state:
-    st.session_state.output_path_1 = ""
+if 'output_path_1_pdf' not in st.session_state:
+    st.session_state.output_path_1_pdf = ""
+if 'output_path_1_docx' not in st.session_state:
+    st.session_state.output_path_1_docx = ""
 if 'output_path_2' not in st.session_state:
     st.session_state.output_path_2 = ""
 if 'output_path_3' not in st.session_state:
     st.session_state.output_path_3 = ""
 
 def handle_generation_1():
-    st.session_state.output_path_1 = generate_part_i_ii(word_file)
+    st.session_state.output_path_1_pdf, st.session_state.output_path_1_docx = generate_part_i_ii(word_file)
     st.session_state.generate_clicked_1 = True
 
 def handle_generation_2():
@@ -65,9 +67,9 @@ with st.expander("1. Upload and Generate Part I & II (MA & AR)"):
             st.success("Formatted Part I & II generated!")
 
             # st.button("Formatted Part I & II generated, click here to download.")
-            st.download_button("Download PDF", open(st.session_state.output_path_1 + ".pdf", "rb"),
+            st.download_button("Download PDF", open(st.session_state.output_path_1_pdf, "rb"),
                                file_name="Part_I_II.pdf")
-            st.download_button("Download Word", open(st.session_state.output_path_1 + ".docx", "rb"),
+            st.download_button("Download Word", open(st.session_state.output_path_1_docx, "rb"),
                                file_name="Part_I_II.docx")
         # else:
         #     st.download_button("Download PDF", open(st.session_state.output_path + ".pdf", "rb"), file_name="Part_I_II.pdf")

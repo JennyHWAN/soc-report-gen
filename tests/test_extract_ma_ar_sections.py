@@ -4,6 +4,7 @@ import pytest
 from docx import Document
 from backend.extract.ma_ar_parser import extract_ma_ar_sections
 from tests.utils.test_helpers import save_sections_to_docx
+from backend.output.word_generator import generate_ma_ar_docx
 
 TEST_DOCX = "tests/SectionI&II-fortest.docx"
 OUTPUT_DIR = "tests/tmp_output"
@@ -38,6 +39,19 @@ def test_extract_sections(test_docx_file):
     assert isinstance(ar, list)
     assert "管理层的第一段" in "".join(ma)
     assert "审计师报告的第一段" in "".join(ar)
+
+def test_generate_ma_ar_docx(test_docx_file, clean_output_dir):
+    base_output_path = os.path.join(clean_output_dir, "Part_I_II")
+    with open(test_docx_file, "rb") as f:
+        docx_path = generate_ma_ar_docx(test_docx_file, f, base_output_path)
+
+    assert os.path.exists(docx_path)
+
+    # Optionally, check content
+    output_doc = Document(docx_path)
+    full_text = "\n".join(p.text for p in output_doc.paragraphs)
+    assert "管理层认定" in full_text
+    assert "审计师报告" in full_text
 
 def test_output_docx_files(test_docx_file, clean_output_dir):
     doc = Document(test_docx_file)
