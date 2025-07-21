@@ -30,6 +30,7 @@ streamlit run app.py --server.address 0.0.0.0 --server.port 8501
 sudo apt install texlive-xetex fonts-arphic-ukai fonts-arphic-uming fonts-noto-cjk pandoc
 sudo apt install texlive-fonts-recommended texlive-lang-chinese
 sudo apt install fonts-noto-cjk fonts-texgyre
+sudo apt install libreoffice
 ```
 
 # Test

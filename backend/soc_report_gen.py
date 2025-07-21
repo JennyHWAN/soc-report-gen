@@ -9,6 +9,7 @@ import subprocess
 import streamlit as st
 from backend.output.pdf_generator import generate_ma_ar_pdf
 from backend.output.word_generator import generate_ma_ar_docx
+from backend.utils.convert_docx_to_pdf import convert_docx_to_pdf
 
 # === Utility Functions ===
 def save_uploaded_file(uploaded_file, suffix):
@@ -38,6 +39,9 @@ def make_final_output_base(prefix):
 # === Part I & II: MA & AR Word Input ===
 def generate_part_i_ii(word_file, base_name: str = "Part_I_II"):
     output_base = os.path.join("generated_reports", base_name)
+    output_dir = os.path.dirname(output_base)
+
+    os.makedirs(output_dir, exist_ok=True)
 
     # Save uploaded file to temporary disk
     with tempfile.NamedTemporaryFile(delete=False, suffix=".docx") as tmp_word:
@@ -45,8 +49,8 @@ def generate_part_i_ii(word_file, base_name: str = "Part_I_II"):
         tmp_word_path = tmp_word.name
 
     try:
-        pdf_path = generate_ma_ar_pdf(tmp_word_path, word_file, output_base)
         docx_path = generate_ma_ar_docx(tmp_word_path, word_file, output_base)
+        pdf_path = convert_docx_to_pdf(docx_path, output_dir)
     finally:
         # ✅ This ensures the file is always cleaned up, even on error
         os.remove(tmp_word_path)
